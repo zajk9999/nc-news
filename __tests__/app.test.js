@@ -46,6 +46,7 @@ describe("/api/articles/:article_id", () => {
 			.get("/api/articles/3")
 			.expect(200)
 			.then(({ body }) => {
+				expect(body.article.article_id).toBe(3);
 				expect(body.article.author).toBe("icellusedkars");
 				expect(body.article.title).toBe("Eight pug gifs that remind me of mitch");
 				expect(body.article.body).toBe("some gifs");

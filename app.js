@@ -1,11 +1,8 @@
 const express = require("express")
-const { getTopics, getArticleById } = require("./controllers/nc-news-controllers")
+const { getTopics, getArticleById, sendEndpoints } = require("./controllers/nc-news-controllers")
 const app = express()
-const endpoints = require("./endpoints.json")
 
-app.get("/api", (request, response) => {
-  response.status(200).send({endpoints})
-})
+app.get("/api", sendEndpoints)
 
 app.get("/api/topics", getTopics)
 
