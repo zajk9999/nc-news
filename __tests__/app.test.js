@@ -104,3 +104,56 @@ describe("/api/articles", () => {
 			});
 	});
 })
+
+
+describe("/api/articles/:article_id/comments", () => {
+	it("GET: 200 - responds with a correct comments array", () => {
+		return request(app)
+			.get("/api/articles/3/comments")
+			.expect(200)
+			.then(({ body }) => {
+				body.comments.forEach((comment) => {
+					expect(typeof comment.comment_id).toBe("number");
+					expect(typeof comment.author).toBe("string");
+					expect(typeof comment.article_id).toBe("number");
+					expect(typeof comment.body).toBe("string");
+					expect(typeof comment.created_at).toBe("string");
+					expect(typeof comment.votes).toBe("number");
+					
+				});
+		});
+	})
+	it("GET: 200 - responds with an array of comments in the descending order", () => {
+		return request(app)
+			.get("/api/articles/3/comments")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.comments).toBeSortedBy("created_at", {descending: true});
+			});
+	});
+	it("GET: 200 - responds with en empty arrat when given an id for the existing article, but there is no comments", () => {
+		return request(app)
+		  .get("/api/articles/10/comments")
+		  .expect(200)
+		  .then(({body}) => {
+			expect(body.comments).toEqual([]);
+		  });
+	  });
+	it("GET: 400 - responds with 'Bad Request' when given invalid article ID as a parameter", () => {
+		return request (app)
+			.get("/api/articles/not-a-valid-id/comments")
+			.expect(400)
+			.then(({body})=> {
+				expect(body.msg).toBe("Bad Request")
+			}) 
+	})
+	it("GET: 404 - responds with 'Article does not exist' when given a valid but non-existent article id", () => {
+		return request(app)
+		  .get("/api/articles/999/comments")
+		  .expect(404)
+		  .then(({body}) => {
+			expect(body.msg).toBe('Article does not exist');
+		  });
+	  });
+})
+	
