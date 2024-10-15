@@ -33,6 +33,6 @@
     "pg": "^8.13.0"
   },
   "jest": {
-    "setupFilesAfterEnv": ["jest-sorted"]
+    "setupFilesAfterEnv": ["jest-extended/all", "jest-sorted"]
   }
 }
