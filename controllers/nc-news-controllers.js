@@ -1,12 +1,10 @@
 const { request } = require("../app")
 const { fetchTopics, fetchArticleById } = require("../models/nc-news-models")
+const endpoints = require("../endpoints.json")
 
-exports.sendEndpoints = (() => {
-    require("../endpoints.json").then((endpoints)=> {
-        console.log(endpoints)
-        response.status(200).send({endpoints})
+exports.sendEndpoints = ((request, response, next) => {
+    response.status(200).send({endpoints})
     })
-})
 
 exports.getTopics = ((request, response, next) => {
     fetchTopics().then((topics) => {
