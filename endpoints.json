@@ -75,5 +75,23 @@
           "created_at": "2024-10-16T09:49:47.662Z"
         }
       }
-    }
+    },
+    "PATCH /api/articles/:article_id": {
+      "description": "changing the votes counter",
+      "accepted post body": {
+        "newVote": "3"
+        },
+        "exampleResponse": {
+          "article": {
+            "article_id": 3,
+            "title": "Eight pug gifs that remind me of mitch",
+            "topic": "mitch",
+            "author": "icellusedkars",
+            "body": "some gifs",
+            "created_at": "2020-11-03T09:12:00.000Z",
+            "votes": 3,
+            "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+          }
+        }
+      }
   }

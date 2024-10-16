@@ -72,8 +72,66 @@ describe("/api/articles/:article_id", () => {
 			expect(body.msg).toBe('Article does not exist');
 		  });
 	  });
-	
+	it('PATCH: 200 - updating the votes for the specific article and sends updated article object as a response', () => {
+		const votesToUpdate = {
+		  newVote: '2',		  
+		};
+		return request(app)
+		  .patch("/api/articles/1")
+		  .send(votesToUpdate)
+		  .expect(200)
+		  .then(({body}) => {
+			expect(body.article.votes).toBe(102);
+		  });
+		})
+	it('PATCH: 200 - ignoring extra keys in the objects and updates the article as long as the correct key is included', () => {
+		const votesToUpdate = {
+		 newVote: '-200',	
+		 oldVote: '7'	  
+		};
+		return request(app)
+		  .patch("/api/articles/1")
+		  .send(votesToUpdate)
+		  .expect(200)
+		  .then(({body}) => {
+			expect(body.article.votes).toBe(-100);
+			  });
+			})
+	it("PATCH: 400 - responds with an appropriate status and error message when provided with the object without correct key", () => {
+		const votesToUpdate = {
+			oldVote: '7'	  
+		   };
+		   return request(app)
+			 .patch("/api/articles/1")
+			 .send(votesToUpdate)
+			 .expect(400)
+			 .then(({body}) => {
+			   expect(body.msg).toBe("Bad Request");
+				});
+			})
+	it("PATCH: 400 - responds with an appropriate status and error message when not provided with the object", () => {
+		return request(app)
+			 .patch("/api/articles/1")
+			 .send()
+			 .expect(400)
+			 .then(({body}) => {
+			  expect(body.msg).toBe("Bad Request");
+			});
+		})
+	it('PATCH: 404 - responds with "Article does not exist" message when given the given article id whoch does not exist', () => {
+		const votesToUpdate = {
+		 newVote: '-2',	
+			};
+			return request(app)
+			  .patch("/api/articles/99")
+			  .send(votesToUpdate)
+			  .expect(404)
+			  .then(({body}) => {
+				expect(body.msg).toBe("Article does not exist");
+				  });
+			})
 });
+
 
 describe("/api/articles", () => {
 	it("GET: 200 - responds with an array of articles", () => {
@@ -156,7 +214,7 @@ describe("/api/articles/:article_id/comments", () => {
 			expect(body.msg).toBe('Article does not exist');
 		  });
 	  });
-	test('POST: 201 - adds a new comment for the specific article and sends the new comment back as a response', () => {
+	it('POST: 201 - adds a new comment for the specific article and sends the new comment back as a response', () => {
 		const newComment = {
 		  username: 'rogersop',
 		  body: "It's amazing"
@@ -172,7 +230,7 @@ describe("/api/articles/:article_id/comments", () => {
 			expect(body.comment.body).toBe("It's amazing");
 		  });
 	  });
-	  test('POST: 201 - ignores additional keys in the given object and creates the comment as long as the necessary keys are included', () => {
+	  it('POST: 201 - ignores additional keys in the given object and creates the comment as long as the necessary keys are included', () => {
 		const newComment = {
 		  username: 'rogersop',
 		  body: "It's amazing",
@@ -189,7 +247,7 @@ describe("/api/articles/:article_id/comments", () => {
 			expect(body.comment.body).toBe("It's amazing");
 		  });
 	  });
-	  test("POST: 404 - responds with an appropriate status and error message when provided with the article id that doesn't exist", () => {
+	  it("POST: 404 - responds with an appropriate status and error message when provided with the article id that doesn't exist", () => {
 		const newComment = {
 			username: 'rogersop',
 			body: "It's amazing"
@@ -202,7 +260,7 @@ describe("/api/articles/:article_id/comments", () => {
 			expect(body.msg).toBe('Article does not exist');
 		  });
 	  });
-	  test("POST: 406 - responds with an appropriate status and error message when provided with the username that doesn't exist", () => {
+	  it("POST: 406 - responds with an appropriate status and error message when provided with the username that doesn't exist", () => {
 		const newComment = {
 			username: 'pikachu',
 			body: "It's amazing"
@@ -215,7 +273,7 @@ describe("/api/articles/:article_id/comments", () => {
 			expect(body.msg).toBe('Username does not exist');
 		  });
 	  });
-	  test("POST: 400 - responds with an appropriate status and error message when not provided with the object", () => {
+	  it("POST: 400 - responds with an appropriate status and error message when not provided with the object", () => {
 		const newComment = {
 			user: 'rogersop',
 			body: "It's amazing"
@@ -228,7 +286,7 @@ describe("/api/articles/:article_id/comments", () => {
 			expect(body.msg).toBe('Bad Request');
 		  });
 	  });
-	  test("POST: 400 - responds with an appropriate status and error message when provided with the object without correct keys", () => {
+	  it("POST: 400 - responds with an appropriate status and error message when provided with the object without correct keys", () => {
 		const newComment = {
 			user: 'rogersop',
 			body: "It's amazing"
