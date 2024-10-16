@@ -112,6 +112,7 @@ describe("/api/articles/:article_id/comments", () => {
 			.get("/api/articles/3/comments")
 			.expect(200)
 			.then(({ body }) => {
+				expect(body.comments.length).toBe(2);
 				body.comments.forEach((comment) => {
 					expect(typeof comment.comment_id).toBe("number");
 					expect(typeof comment.author).toBe("string");
@@ -131,7 +132,7 @@ describe("/api/articles/:article_id/comments", () => {
 				expect(body.comments).toBeSortedBy("created_at", {descending: true});
 			});
 	});
-	it("GET: 200 - responds with en empty arrat when given an id for the existing article, but there is no comments", () => {
+	it("GET: 200 - responds with an empty array when given an id for the existing article, but there is no comments", () => {
 		return request(app)
 		  .get("/api/articles/10/comments")
 		  .expect(200)
@@ -155,5 +156,91 @@ describe("/api/articles/:article_id/comments", () => {
 			expect(body.msg).toBe('Article does not exist');
 		  });
 	  });
+	test('POST: 201 - adds a new comment for the specific article and sends the new comment back as a response', () => {
+		const newComment = {
+		  username: 'rogersop',
+		  body: "It's amazing"
+		};
+		return request(app)
+		  .post("/api/articles/3/comments")
+		  .send(newComment)
+		  .expect(201)
+		  .then(({body}) => {
+			expect(typeof body.comment.comment_id).toBe("number");
+			expect(body.comment.article_id).toBe(3);
+			expect(body.comment.author).toBe('rogersop');
+			expect(body.comment.body).toBe("It's amazing");
+		  });
+	  });
+	  test('POST: 201 - ignores additional keys in the given object and creates the comment as long as the necessary keys are included', () => {
+		const newComment = {
+		  username: 'rogersop',
+		  body: "It's amazing",
+		  author: "Pikachu"
+		};
+		return request(app)
+		  .post("/api/articles/3/comments")
+		  .send(newComment)
+		  .expect(201)
+		  .then(({body}) => {
+			expect(typeof body.comment.comment_id).toBe("number");
+			expect(body.comment.article_id).toBe(3);
+			expect(body.comment.author).toBe('rogersop');
+			expect(body.comment.body).toBe("It's amazing");
+		  });
+	  });
+	  test("POST: 404 - responds with an appropriate status and error message when provided with the article id that doesn't exist", () => {
+		const newComment = {
+			username: 'rogersop',
+			body: "It's amazing"
+		  };
+		return request(app)
+		  .post('/api/articles/99/comments')
+		  .send(newComment)
+		  .expect(404)
+		  .then(({body}) => {
+			expect(body.msg).toBe('Article does not exist');
+		  });
+	  });
+	  test("POST: 406 - responds with an appropriate status and error message when provided with the username that doesn't exist", () => {
+		const newComment = {
+			username: 'pikachu',
+			body: "It's amazing"
+		  };
+		return request(app)
+		  .post('/api/articles/9/comments')
+		  .send(newComment)
+		  .expect(406)
+		  .then(({body}) => {
+			expect(body.msg).toBe('Username does not exist');
+		  });
+	  });
+	  test("POST: 400 - responds with an appropriate status and error message when not provided with the object", () => {
+		const newComment = {
+			user: 'rogersop',
+			body: "It's amazing"
+		  };
+		return request(app)
+		  .post('/api/articles/9/comments')
+		  .send()
+		  .expect(400)
+		  .then(({body}) => {
+			expect(body.msg).toBe('Bad Request');
+		  });
+	  });
+	  test("POST: 400 - responds with an appropriate status and error message when provided with the object without correct keys", () => {
+		const newComment = {
+			user: 'rogersop',
+			body: "It's amazing"
+		};
+		return request(app)
+		  .post('/api/articles/9/comments')
+		  .send(newComment)
+		  .expect(400)
+		  .then(({body}) => {
+			expect(body.msg).toBe('Bad Request');
+		  });
+	  });
+
 })
 	
