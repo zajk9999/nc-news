@@ -1,5 +1,5 @@
 const { request } = require("../app")
-const { fetchTopics, fetchArticleById, fetchArticles, fetchCommentsByArticleId, insertComment, patchVotes, deleteCommentById } = require("../models/nc-news-models")
+const { fetchTopics, fetchArticleById, fetchArticles, fetchCommentsByArticleId, insertComment, patchVotes, deleteCommentById, fetchUsers } = require("../models/nc-news-models")
 const endpoints = require("../endpoints.json")
 
 exports.sendEndpoints = ((request, response, next) => {
@@ -65,3 +65,9 @@ exports.removeCommentById = (request, response, next) => {
         next(err)
    });
 }
+
+exports.getUsers = ((request, response, next) => {
+    fetchUsers().then((users) => {
+        response.status(200).send({users})
+    })
+})

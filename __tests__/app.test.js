@@ -325,3 +325,30 @@ describe("/api/comments/:comment_id", () => {
 			})
 	})	
 })
+
+describe("/api/users", () => {
+	it("GET: 200 - responds with array of users objects", () => {
+		return request(app)
+			.get("/api/users")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.users.length).toBe(4);
+				body.users.forEach((user) => {
+					expect(typeof user.username).toBe("string");
+					expect(typeof user.name).toBe("string");
+					expect(typeof user.name).toBe("string");
+					});
+			});
+	});
+});
+
+describe("*", () => {
+	it("ALL: 404 - responds with 'Path Not Found' message when provided with the wrong path", () => {
+		return request(app)
+			.get("/api/wrong-path")
+			.expect(404)
+			.then(({body}) => {
+				expect(body.msg).toBe("Path Not Found")
+			})
+	})
+})
