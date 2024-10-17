@@ -42,7 +42,18 @@ exports.fetchCommentsByArticleId = (article_id) => {
 exports.insertComment = ({username, body}, article_id) => {
     return db
     .query(`INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *; `, [username, body, article_id])
-    .then((result) => {
-        return result.rows[0]
+    .then(({rows}) => {
+        return rows[0]
+        })
+}
+
+exports.patchVotes = ({newVote}, article_id) => {
+    return db
+    .query(`UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`, [newVote, article_id])
+    .then(({rows}) => {
+        if(!rows.length) {
+            return Promise.reject({status: 404, msg: 'Article does not exist'})
+          } 
+        return rows[0]
         })
 }
