@@ -132,7 +132,6 @@ describe("/api/articles/:article_id", () => {
 			})
 });
 
-
 describe("/api/articles", () => {
 	it("GET: 200 - responds with an array of articles", () => {
 		return request(app)
@@ -161,8 +160,71 @@ describe("/api/articles", () => {
 				expect(body.articles).toBeSortedBy("created_at", {descending: true});
 			});
 	});
+	it("GET: 200 - responds with an array of articles in the descending order", () => {
+		return request(app)
+			.get("/api/articles")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.articles).toBeSortedBy("created_at", {descending: true});
+			});
+	});
+	it("GET: 200 - takes sort_by query parameter and responds with an array of articles sorted by the given column in the descending order", () => {
+		return request(app)
+			.get("/api/articles?sort_by=article_id")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.articles).toBeSortedBy("article_id", {descending: true});
+			});
+	});
+	it("GET: 200 - takes order query parameter and responds with an array sorted by created_at in the given order", () => {
+		return request(app)
+			.get("/api/articles?order=asc")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.articles).toBeSortedBy("created_at");
+			});
+	});
+	it("GET: 200 - takes sort_by and order query parameters and responds with an array of articles sorted by the given column in the given order", () => {
+		return request(app)
+			.get("/api/articles?order=asc&sort_by=article_id")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.articles).toBeSortedBy("article_id");
+			});
+	});
+	it("GET: 200 - ignores any additional quey parameters as long as there is at least 1 valid one", () => {
+		return request(app)
+			.get("/api/articles?order=asc&sort_by=article_id&something")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.articles).toBeSortedBy("article_id");
+			});
+	});
+	it("GET: 200 - ignores query parameters which does not exist and responds with the defaulted array", () => {
+		return request(app)
+			.get("/api/articles?author=john")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.articles).toBeSortedBy("created_at", {descending: true});
+			});
+	});
+	it("GET: 400 - when provided with the valid parameter which is not greenlisted", () => {
+		return request(app)
+			.get("/api/articles?sort_by=article_name")
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Query not valid");
+			});
+	});
+	it("GET: 400 - when provided with the valid parameter which is greenlisted, but for the different query parameter", () => {
+		return request(app)
+			.get("/api/articles?order=article_id")
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Query not valid");
+			});
+	});
 })
-
 
 describe("/api/articles/:article_id/comments", () => {
 	it("GET: 200 - responds with a correct comments array", () => {
@@ -342,7 +404,7 @@ describe("/api/users", () => {
 	});
 });
 
-describe("*", () => {
+describe("/*", () => {
 	it("ALL: 404 - responds with 'Path Not Found' message when provided with the wrong path", () => {
 		return request(app)
 			.get("/api/wrong-path")
