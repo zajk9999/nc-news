@@ -93,5 +93,9 @@
             "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
           }
         }
+      },
+      "DELETE /api/comments/:comment_id": {
+        "description": "deleting the comment by it's id",
+        "exampleResponse": "status code 204, no body"
       }
-  }
+  } 

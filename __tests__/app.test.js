@@ -302,3 +302,26 @@ describe("/api/articles/:article_id/comments", () => {
 
 })
 	
+describe("/api/comments/:comment_id", () => {
+	it("DELETE: 204 - deletes the comment by it's id and sends no body back", () => {
+		return request(app)
+			.delete("/api/comments/5")
+			.expect(204)
+	})
+	it("DELETE: 400 - responds with the 'Bad Request' when provided with the invalid comment id", () => {
+		return request(app)
+			.delete("/api/comments/not-a-number")
+			.expect(400)
+			.then(({body}) => {
+				expect(body.msg).toBe("Bad Request")
+			})
+	})	
+	it("DELETE: 404 - responds with the 'Comment does not exist' when provided with the comment id in the valid format, but which does not exist", () => {
+		return request(app)
+			.delete("/api/comments/999")
+			.expect(404)
+			.then(({body}) => {
+				expect(body.msg).toBe("Comment does not exist")
+			})
+	})	
+})
