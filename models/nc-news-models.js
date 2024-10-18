@@ -18,19 +18,31 @@ exports.fetchArticleById = (article_id) => {
     })
 }
 
-exports.fetchArticles = (sort_by = "created_at", order = "desc") => {
+exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
 
     const allowedQueriesSortBy = ["author", "title", "article_id", "topic", "created_at", "votes", "article_img_url", "comment_count"]
 
     const allowedQueriesOrder = ["asc", "desc"]
- 
-    let queryStr = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT (comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id`
+
+    let queryStr = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT (comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id`
 
     if(!allowedQueriesSortBy.includes(sort_by) || !allowedQueriesOrder.includes(order)) {
         return Promise.reject({ status: 400, msg: "Query not valid" });
     }
 
-    queryStr += ` ORDER BY ${sort_by} ${order}`
+    if(topic) {
+        queryStr += ` WHERE TOPIC = $1 GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`
+        return db
+        .query(queryStr, [topic])
+        .then(({rows}) => {
+            if(!rows.length) {
+                return Promise.reject({status: 404, msg: 'Topic Not Found'})
+              } 
+            return rows
+        })
+    }
+
+    queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`
     return db
     .query(queryStr)
     .then(({rows}) => {

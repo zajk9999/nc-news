@@ -224,6 +224,37 @@ describe("/api/articles", () => {
 				expect(body.msg).toBe("Query not valid");
 			});
 	});
+	it("GET: 200 - responds with an array of articles about a queried topic if topic is provided as a query parameter", () => {
+		return request(app)
+		.get("/api/articles?topic=mitch")
+		.expect(200)
+		.then(({ body }) => {
+			expect(body.articles.length).toBe(12);
+			body.articles.forEach((article) => {
+				expect(article.topic).toBe("mitch");
+			});
+		});
+	});
+	it("GET: 200 - responds with an array of articles about a queried topic if topic if all parameters are provided", () => {
+		return request(app)
+		.get("/api/articles?topic=mitch&order=asc&sort_by=article_id")
+		.expect(200)
+		.then(({ body }) => {
+			expect(body.articles.length).toBe(12);
+			expect(body.articles).toBeSortedBy("article_id");
+			body.articles.forEach((article) => {
+				expect(article.topic).toBe("mitch");
+			});
+		});
+	})
+	it("GET: 404 - responds with appropriate message when there is no articles for given topic", () => {
+		return request(app)
+		.get("/api/articles?topic=kev")
+		.expect(404)
+		.then(({ body }) => {
+			expect(body.msg).toBe("Topic Not Found")
+		});
+	});
 })
 
 describe("/api/articles/:article_id/comments", () => {
