@@ -17,14 +17,14 @@ exports.getArticleById = ((request, response, next) => {
     fetchArticleById(article_id).then((row) => {
         response.status(200).send({article: row})
     }).catch((err) => {
-         next(err)
+        next(err)
     })
 })
 
 exports.getArticles = ((request, response, next) => {
     const {sort_by, order, topic} = request.query
     fetchArticles(sort_by, order, topic).then((articles) => {
-         response.status(200).send({articles})
+        response.status(200).send({articles})
     }).catch((err) => {
         next(err)
    })
