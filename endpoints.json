@@ -24,8 +24,8 @@
     "description": "serves an array of all articles, sorted in by createt_at in descending order by default",
     "queries": {
       "sort_by" :["author", "title", "article_id", "topic", "created_at", "votes", "article_img_url", "comment_count"],
-      "order" : ["asc", "desc"]}, 
-      "topic" : "*",
+      "order" : ["asc", "desc"], 
+      "topic" : "*"},
     "exampleResponse": {
       "articles": [
         {
